@@ -18,31 +18,56 @@ app.use(express.json());
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://all-modul:YFpNtBkSaE24ELEw@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
-
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const uri =
+  "mongodb+srv://all-modul:YFpNtBkSaE24ELEw@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: ServerApiVersion.v1,
+});
 
 async function run() {
-    try {
-      const createdb = client.db("freeeservices").collection("searvices");
-      const revewdb = client.db("freeeservices").collection("revew");
-  
-  
-      
-      //get all searvices and limit 3 
-      app.get('/searvices' ,async (req , res)=>{
-        const lemet = parseInt(req.query.lemet);
-        const query = {};
-        const curture = createdb.find(query);
-        const result = await curture.limit(lemet).toArray();
-        res.send(result)
-      })
-     
-    } finally {
-    }
+  try {
+    const createdb = client.db("freeeservices").collection("searvices");
+    const revewdb = client.db("freeeservices").collection("review");
+
+    //get all searvices and limit 3
+    app.get("/searvices", async (req, res) => {
+      const lemet = parseInt(req.query.lemet);
+      const query = {};
+      const curture = createdb.find(query);
+      const result = await curture.limit(lemet).toArray();
+      res.send(result);
+    });
+    // get all searvices  lode
+    app.get("/searvices", async (req, res) => {
+      const query = {};
+      const curture = createdb.find(query);
+      const result = await curture.toArray();
+      res.send(result);
+    });
+    // get id and data lode find one
+    app.get("/searvices/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const query = { _id: ObjectId(id) };
+      const result = await createdb.findOne(query);
+      res.send(result);
+    });
+
+    // post all review
+    app.post("/review", async (req, res) => {
+      const reviewitem = {
+        ...req.body,
+        date: new Date(),
+      };
+      const result = await revewdb.insertOne(reviewitem);
+      res.send(result)
+    });
+  } finally {
   }
+}
   run().catch(console.dir);
 
 
