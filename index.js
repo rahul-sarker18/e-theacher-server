@@ -60,11 +60,14 @@ async function run() {
       res.send(result);
     });
     //post catogury data
-    app.get("/review", async (req, res) => {
-      const id = req.query.id;
-      const query = { id: ObjectId(id) };
+    app.get("/review/:ids", async (req, res) => {
+      const ids = req.params.ids;
+      console.log(ids);
+      const query = { id: ids };
+      console.log(query);
       const curture = revewdb.find(query);
       const result = await curture.toArray();
+      console.log(result);
       res.send(result);
     });
   } finally {
