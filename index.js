@@ -31,11 +31,12 @@ async function run() {
   
   
       
-      //get all searvices
+      //get all searvices and limit 3 
       app.get('/searvices' ,async (req , res)=>{
+        const lemet = parseInt(req.query.lemet);
         const query = {};
         const curture = createdb.find(query);
-        const result = await curture.toArray();
+        const result = await curture.limit(lemet).toArray();
         res.send(result)
       })
      
