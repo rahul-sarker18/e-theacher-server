@@ -12,15 +12,9 @@ app.use(express.json());
 
 // mongodb atlast conected 
 
-//username : all-modul
-//password:  YFpNtBkSaE24ELEw
-
-
-
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const uri =
-  "mongodb+srv://all-modul:YFpNtBkSaE24ELEw@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -63,7 +57,15 @@ async function run() {
         date: new Date(),
       };
       const result = await revewdb.insertOne(reviewitem);
-      res.send(result)
+      res.send(result);
+    });
+    //post catogury data
+    app.get("/review", async (req, res) => {
+      const id = req.query.id;
+      const query = { id: ObjectId(id) };
+      const curture = revewdb.find(query);
+      const result = await curture.toArray();
+      res.send(result);
     });
   } finally {
   }
