@@ -62,10 +62,19 @@ async function run() {
     //post catogury data
     app.get("/review/:ids", async (req, res) => {
       const ids = req.params.ids;
-      console.log(ids);
       const query = { id: ids };
+      const curture = revewdb.find(query).sort({ date: -1 });
+      const result = await curture.toArray();
+      res.send(result);
+    });
+
+    //email in veryfy
+    app.get("/review", async (req, res) => {
+      const emails = req.query.email;
+      console.log(emails);
+      const query = { email: emails };
       console.log(query);
-      const curture = revewdb.find(query);
+      const curture = revewdb.find(query).sort({ date: -1, });
       const result = await curture.toArray();
       console.log(result);
       res.send(result);
