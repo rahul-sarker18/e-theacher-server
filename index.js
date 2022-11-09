@@ -50,6 +50,13 @@ async function run() {
       res.send(result);
     });
 
+    //services add
+    app.post('/searvices' , async(req ,res)=>{
+      const information = req.body;
+     const result = await createdb.insertOne(information);
+     res.send(result)
+    })
+
     // post all review
     app.post("/review", async (req, res) => {
       const reviewitem = {
@@ -84,11 +91,21 @@ async function run() {
       console.log(result);
       res.send(result)
     })
+
     //edite reviews
     app.put('/review/:id' ,async (req , res)=>{
       const id = req.params.id;
-      const body = req.body;
-      console.log(id , body);
+      const filter = {_id : ObjectId(id)};
+      console.log("filter", filter);
+      const texts = req.body;
+      console.log('text' , texts.text);
+      const option = { upsert: true};
+      const updaterev = {
+        text: texts.text
+      };
+      console.log('updat', updaterev);
+      const result = await revewdb.updateOne(filter , updaterev , option)
+      res.send(result);
     })
 
   } finally {
