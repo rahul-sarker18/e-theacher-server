@@ -71,14 +71,26 @@ async function run() {
     //email in veryfy
     app.get("/review", async (req, res) => {
       const emails = req.query.email;
-      console.log(emails);
       const query = { email: emails };
-      console.log(query);
       const curture = revewdb.find(query).sort({ date: -1, });
       const result = await curture.toArray();
-      console.log(result);
       res.send(result);
     });
+    // delete oparations review
+    app.delete('/review/:id' ,async (req , res)=>{
+      const id = req.params.id;
+      const query = {_id : ObjectId(id)};
+      const result = await revewdb.deleteOne(query);
+      console.log(result);
+      res.send(result)
+    })
+    //edite reviews
+    app.put('/review/:id' ,async (req , res)=>{
+      const id = req.params.id;
+      const body = req.body;
+      console.log(id , body);
+    })
+
   } finally {
   }
 }
