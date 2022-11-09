@@ -101,7 +101,10 @@ async function run() {
       console.log('text' , texts.text);
       const option = { upsert: true};
       const updaterev = {
-        text: texts.text
+        $set:{
+          text: texts.text
+        }
+        
       };
       console.log('updat', updaterev);
       const result = await revewdb.updateOne(filter , updaterev , option)
