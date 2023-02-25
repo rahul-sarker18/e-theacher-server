@@ -29,7 +29,7 @@ app.use(express.json());
 // mongodb atlast conected
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://all-modul:${process.env.DB_PASSWORD}@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -42,14 +42,21 @@ async function run() {
     const revewdb = client.db("freeeservices").collection("review");
 
     //jwt token used
-
     app.post("/jwt", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.JOT_TOKEN, { expiresIn: "12h" });
       res.send({ token });
     });
+    //user email get your post data
+    
+    app.get("/mypost", async (req, res) => {
+      const emails = req.query.email;
+      const userinformation = { email: emails, };
+      const result = await createdb.find(userinformation).toArray();
+      res.send(result);
+    });
 
-    //get all searvices and limit 3
+    //get all services and limit 3
     app.get("/searvices", async (req, res) => {
       const lemet = parseInt(req.query.lemet);
       const query = {};
@@ -98,18 +105,9 @@ async function run() {
       res.send(result);
     });
 
-    //email in veryfy
+    //email in verify
     app.get("/review", jottoken, async (req, res) => {
       const decoded = req.decoded;
-
-
-
-      // const emails = req.query.email;
-      // const query = { email: emails };
-      // const curture = revewdb.find(query).sort({ date: -1 });
-      // const result = await curture.toArray();
-      // res.send(result);
-
       let query = {};
       if (req.query.email) {
         query = { email: req.query.email };
@@ -119,7 +117,7 @@ async function run() {
       res.send(result);
     });
 
-    // delete oparations review
+    // delete operations review
     app.delete("/review/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -127,7 +125,7 @@ async function run() {
       res.send(result);
     });
 
-    //edite reviews
+    //edited reviews
     app.put("/review/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
@@ -138,7 +136,7 @@ async function run() {
           text: texts.text,
         },
       };
-   
+
       const result = await revewdb.updateOne(filter, updaterev, option);
       res.send(result);
     });
