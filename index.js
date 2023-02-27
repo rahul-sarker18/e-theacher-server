@@ -5,18 +5,15 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const port = process.env.PORT || 5000;
 
-//midel waer
+//medal ware
 app.use(cors());
 app.use(express.json());
-
  function jottoken(req, res, next) {
-  const authtoken = req.headers.authorizitan;
- 
-
-  if (!authtoken) {
+  const authored = req.headers.authorizitan;
+  if (!authored) {
     return res.status(401).send({ message: "user ont found" });
   }
-  const token = authtoken.split(" ")[1];
+  const token = authored.split(" ")[1];
   jwt.verify(token, process.env.JOT_TOKEN, function (error, decoded) {
     if (error) {
       return res.status(403).send({ message: " Forbidden" });
@@ -26,7 +23,7 @@ app.use(express.json());
   });
 }
 
-// mongodb atlast conected
+// mongodb atlas confected
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://all-modul:${process.env.DB_PASSWORD}@cluster0.rd0mbf3.mongodb.net/?retryWrites=true&w=majority`;
@@ -55,6 +52,13 @@ async function run() {
       const result = await createdb.find(userinformation).toArray();
       res.send(result);
     });
+    // delete operations post
+    app.delete("/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await createdb.deleteOne(query);
+      res.send(result);
+    });
 
     //get all services and limit 3
     app.get("/searvices", async (req, res) => {
@@ -62,14 +66,18 @@ async function run() {
       const query = {};
       const curture = createdb.find(query);
       const result = await curture.limit(lemet).toArray();
+      
       res.send(result);
     });
     // get all searvices  lode
-    app.get("/searvices", async (req, res) => {
+    app.get("/searvicess", async (req, res) => {
       const query = {};
-      const curture = createdb.find(query);
-      const result = await curture.toArray();
-      res.send(result);
+      const size = parseInt(req.query.size);
+      const page = parseInt(req.query.page);
+      console.log(size , page);
+      const curter =await createdb.find(query).skip(size * page).limit(size).toArray();
+      const count = await createdb.estimatedDocumentCount()
+      res.send({count , product : curter });
     });
     // get id and data lode find one
     app.get("/searvices/:id", async (req, res) => {
@@ -89,14 +97,14 @@ async function run() {
 
     // post all review
     app.post("/review", async (req, res) => {
-      const reviewitem = {
+      const reviewing = {
         ...req.body,
         date: new Date(),
       };
-      const result = await revewdb.insertOne(reviewitem);
+      const result = await revewdb.insertOne(reviewing);
       res.send(result);
     });
-    //post catogury data
+    //post category data
     app.get("/review/:ids", async (req, res) => {
       const ids = req.params.ids;
       const query = { id: ids };
